@@ -13,6 +13,7 @@ class NavBar extends React.Component {
                 <li><button onClick={() => this.props.displayComponent("Delete")}>Cancel Bookings</button></li>
                 <li><button onClick={() => this.props.displayComponent("Display")}>Display Bookings</button></li>
                 <li><button onClick={() => this.props.displayComponent("Avail")}>Display Seats</button></li>
+                <li><button onClick={() => this.props.displayComponent("AddBlack")}>Add BlackList</button></li>
             </ul>
         </nav>
         );

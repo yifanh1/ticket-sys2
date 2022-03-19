@@ -113,3 +113,7 @@ footer {
   margin-top:10px; 
   margin-left:10px;
 }
+#warning {
+  color: rgb(148, 0, 0);
+  font-weight: bold;
+}

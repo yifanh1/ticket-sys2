@@ -6,6 +6,10 @@ type Ticket {
   phoneNumber: String!
   created: GraphQLDate!
 }
+type AddResponse {
+  status: Boolean!
+  errors: [String!]
+}
 
 input TicketInputs {
   name: String!
@@ -18,6 +22,7 @@ type Query {
 }
 type Mutation {
   # add a traveller
-  ticketAdd(ticket: TicketInputs!): Boolean!
-  ticketDelete(ticket: TicketInputs!): Boolean!
+  ticketAdd(ticket: TicketInputs!): AddResponse!
+  ticketDelete(ticket: TicketInputs!): AddResponse!
+  blackAdd(ticket: TicketInputs!): Boolean!
 }

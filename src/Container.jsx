@@ -5,6 +5,7 @@ import TicketAvail from './pages/FreeSeatsPage'
 import NavBar from './NavBar'
 import Home from './pages/HomePage'
 import React from 'react';
+import BlackAdd from './pages/AddBlackPage';
 const dateRegex = new RegExp('^\\d\\d\\d\\d-\\d\\d-\\d\\d');
 
 function jsonDateReviver(key, value) {
@@ -21,10 +22,12 @@ class Container extends React.Component {
           showDisplay: false,
           showDelete: false,
           showAvail: false,
+          showAddBlack: false,
          };
         this.createTicket = this.createTicket.bind(this);
         this.deleteTicket = this.deleteTicket.bind(this);
         this.displayComponent = this.displayComponent.bind(this);
+        this.createBlocked = this.createBlocked.bind(this);
       }
     
       componentDidMount() {
@@ -54,6 +57,7 @@ class Container extends React.Component {
             name: "${ticket.name}",
             phoneNumber: "${ticket.phoneNumber}",
           }) 
+          {status, errors}
         }`
         // console.log(query)
         const response = await fetch('/graphql', {
@@ -63,8 +67,12 @@ class Container extends React.Component {
         });
         const res = await response.text();
         const resJ = JSON.parse(res);
-        if (resJ.data.ticketAdd) alert("Add Traveller Successfully!");
-        else alert("Failure! No more avaiable seats!");
+        console.log(resJ);
+        if (resJ.data.ticketAdd.status) alert("Add Traveller Successfully!");
+        else {
+          const errors = resJ.data.ticketAdd.errors;
+          alert(`Failure! Errors: ${errors}`)
+        };
         this.loadData();
       }
 
@@ -74,6 +82,7 @@ class Container extends React.Component {
            name: "${ticket.name}",
            phoneNumber: "${ticket.phoneNumber}",
          })
+         {status, errors}
          }`
         console.log(query);
         // console.log(query)
@@ -86,10 +95,34 @@ class Container extends React.Component {
         console.log(res);
         const resJ = JSON.parse(res);
         console.log(resJ);
-        if (resJ.data.ticketDelete) alert("Cancel Traveller Successfully!");
-        else alert("Failure! No traveller found based on the information. please recheck.");
+        const errors = resJ.data.ticketDelete.errors;
+        if (resJ.data.ticketDelete.status) alert("Cancel Traveller Successfully!");
+        else alert(`Failure! Errors: ${errors}`);
         this.loadData();
       }
+
+      async createBlocked(ticket) {
+        const query = `mutation {
+          blackAdd(ticket: {
+            name: "${ticket.name}",
+            phoneNumber: "${ticket.phoneNumber}",
+          }) 
+        }`
+        const response = await fetch('/graphql', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json'},
+          body: JSON.stringify({ query, variables: { ticket } })
+        });
+        const res = await response.text();
+        const resJ = JSON.parse(res);
+        console.log(resJ);
+        if (resJ.data.blackAdd) alert("Add traveller to BlackList Successfully!");
+        else {
+          alert(`Add to BlackList Failure!`)
+        };
+        this.loadData();
+      }
+
       displayComponent(name) {
         switch (name) {
           case "Home":
@@ -98,7 +131,8 @@ class Container extends React.Component {
               showAdd: false,
               showDisplay: false,
               showDelete: false,
-              showAvail: false,});
+              showAvail: false,
+              showAddBlack:false,});
               console.log()
               // Container.render();
             break;
@@ -108,8 +142,8 @@ class Container extends React.Component {
                 showAdd: true,
                 showDisplay: false,
                 showDelete: false,
-                showAvail: false,});
-                console.log()
+                showAvail: false,
+                showAddBlack:false,});
                 // Container.render();
             break;
           case "Delete":
@@ -118,7 +152,8 @@ class Container extends React.Component {
                 showAdd: false,
                 showDisplay: false,
                 showDelete: true,
-                showAvail: false,});
+                showAvail: false,
+                showAddBlack:false,});
                 // Container.render();
             break;
           case "Avail":
@@ -127,7 +162,8 @@ class Container extends React.Component {
                     showAdd: false,
                     showDisplay: false,
                     showDelete: false,
-                    showAvail: true,}); 
+                    showAvail: true,
+                    showAddBlack:false,}); 
                     // Container.render();
                     break;
           case "Display":
@@ -136,9 +172,19 @@ class Container extends React.Component {
                 showAdd: false,
                 showDisplay: true,
                 showDelete: false,
-                showAvail: false,});  
+                showAvail: false,
+                showAddBlack:false,});  
                 // Container.render();
                 break;
+          case "AddBlack":
+            this.setState({
+                showHome: false,
+                showAdd: false,
+                showDisplay: false,
+                showDelete: false,
+                showAvail: false,
+                showAddBlack:true,
+            })
         }
       }
 
@@ -154,6 +200,7 @@ class Container extends React.Component {
         {this.state.showAdd && <TicketAdd createTicket={this.createTicket}></TicketAdd>}
         {this.state.showDelete && <TicketDelete deleteTicket={this.deleteTicket}></TicketDelete>}
         {this.state.showAvail && <TicketAvail ticketNum = {this.state.tickets.length}></TicketAvail>}
+        {this.state.showAddBlack && <BlackAdd createBlocked = {this.createBlocked}></BlackAdd>}
         </React.Fragment>);
     }
   }
