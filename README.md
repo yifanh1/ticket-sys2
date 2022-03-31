@@ -3,8 +3,8 @@ This is the tutorial 4 submission for IT5007.
 ### How to start?
 Please use node **version >= 14** to compile. Make sure front-end and back-end are both running using the 2 commands below.
 ```
-git clone https://github.com/yifanh1/ticket-system.git
-cd ticket-system
+https://github.com/yifanh1/ticket-sys2.git
+cd ticket-sys2
 ```
 - Front end(react): port 3000
 ```
